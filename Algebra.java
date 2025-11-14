@@ -24,81 +24,145 @@ public class Algebra {
 		System.out.println(sqrt(8));
 	}
 
-	// Returns x1 + x2
-	public static int plus(int x1, int x2) {
-		int result = x1;
-		while (x2 > 0) {
-			result++;
-			x2--;
-		}
-		return result;
-	}
+    // ---------- helper functions for sign handling ----------
 
-	// Returns x1 - x2
-	public static int minus(int x1, int x2) {
-		int result = x1;
-		while (x2 > 0) {
-			result--;
-			x2--;
-		}
-		return result;
-	}
+    // Returns -x without using the - operator
+    public static int negate(int x) {
+        int result = 0;
+        if (x > 0) {
+            while (x > 0) {
+                x--;       // move x toward 0
+                result--;  // accumulate negative
+            }
+        } else {
+            while (x < 0) {
+                x++;       // move x toward 0
+                result++;  // accumulate positive
+            }
+        }
+        return result;
+    }
 
-	// Returns x1 * x2
-	public static int times(int x1, int x2) {
-		int result = 0;
-		while (x2 > 0) {
-			result = plus(result, x1);
-			x2--;
-		}
-		return result;
-	}
+    // Returns |x|
+    public static int abs(int x) {
+        if (x >= 0) {
+            return x;
+        }
+        return negate(x);
+    }
 
-	// Returns x^n (for n >= 0)
-	public static int pow(int x, int n) {
-		if (n == 0)
-			return 1;
-		int result = 1;
+    // ---------- algebraic operations ----------
 
-		while (n > 0) {
-			result = times(result, x); 
-			n--; 
-		}
-		return result;
-	}
+    // Returns x1 + x2
+    public static int plus(int x1, int x2) {
+        int result = x1;
+        if (x2 > 0) {
+            while (x2 > 0) {
+                result++;
+                x2--;
+            }
+        } else {
+            while (x2 < 0) {
+                result--;
+                x2++;
+            }
+        }
+        return result;
+    }
 
-	// Returns the integer part of x1 / x2
-	public static int div(int x1, int x2) {
-		int result = x1;
-		int counter=0;
-		while (x2 <=result) {
-			result = minus(result, x2);
-			counter++;
-		}
-		return counter;
-	}
+    // Returns x1 - x2
+    public static int minus(int x1, int x2) {
+        // x1 - x2 = x1 + (-x2)
+        int negX2 = negate(x2);
+        return plus(x1, negX2);
+    }
 
-	// Returns x1 % x2
-	public static int mod(int x1, int x2) {
-	int howMuch=div(x1, x2);
-	int times= times(howMuch, x2);
-	int result = minus(x1, times);
-	
-		return result;
-	}
-	
-	
-	// Returns the integer part of sqrt(x)
-	public static int sqrt(int x) {
-		int counter=0;
-		int pow=0;
-		while(pow<x){
-			counter++;
-			pow=times(counter, counter);
-		}
-		if (pow(counter, 2)==x)
-			return counter;
-		else counter--;	
-		return counter; 
-	}
+    // Returns x1 * x2
+    public static int times(int x1, int x2) {
+        boolean negative = false;
+
+        if (x1 < 0) {
+            negative = !negative;
+            x1 = abs(x1);
+        }
+        if (x2 < 0) {
+            negative = !negative;
+            x2 = abs(x2);
+        }
+
+        int result = 0;
+        while (x2 > 0) {
+            result = plus(result, x1);
+            x2--;
+        }
+
+        if (negative) {
+            result = negate(result);
+        }
+        return result;
+    }
+
+    // Returns x^n (for n >= 0)
+    public static int pow(int x, int n) {
+        int result = 1;
+        while (n > 0) {
+            result = times(result, x);
+            n--;
+        }
+        return result;
+    }
+
+    // Returns the integer part of x1 / x2
+    public static int div(int x1, int x2) {
+        if (x2 == 0) {
+            // Not supposed to be tested; just a simple guard
+            return 0;
+        }
+
+        boolean negative = false;
+
+        if (x1 < 0) {
+            negative = !negative;
+            x1 = abs(x1);
+        }
+        if (x2 < 0) {
+            negative = !negative;
+            x2 = abs(x2);
+        }
+
+        int quotient = 0;
+        while (x1 >= x2) {
+            x1 = minus(x1, x2);
+            quotient++;
+        }
+
+        if (negative) {
+            quotient = negate(quotient);
+        }
+        return quotient;
+    }
+
+    // Returns x1 % x2
+    public static int mod(int x1, int x2) {
+        int howMuch = div(x1, x2);
+        int prod = times(howMuch, x2);
+        int result = minus(x1, prod);
+        return result;
+    }
+
+    // Returns the integer part of sqrt(x)
+    public static int sqrt(int x) {
+        int counter = 0;
+        int sq = 0;
+        while (sq < x) {
+            counter++;
+            sq = times(counter, counter);
+        }
+        if (sq == x) {
+            return counter;
+        } else {
+            counter--;
+            return counter;
+        }
+    }
 }
