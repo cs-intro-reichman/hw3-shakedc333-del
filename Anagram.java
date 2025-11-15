@@ -30,9 +30,27 @@ public class Anagram {
 
 	// Returns true if the two given strings are anagrams, false otherwise.
 	public static boolean isAnagram(String str1, String str2) {
-		 // prepare the text
+		// prepare the text
 		str1 = preProcess(str1);
 		str2 = preProcess(str2);
+		// remove spaces 
+		String noSpace1 = "";
+		String noSpace2 = "";
+
+		for (int i = 0; i < str1.length(); i++) {
+			if (str1.charAt(i) != ' ') {
+				noSpace1 += str1.charAt(i);
+			}
+		}
+
+		for (int i = 0; i < str2.length(); i++) {
+			if (str2.charAt(i) != ' ') {
+				noSpace2 += str2.charAt(i);
+			}
+		}
+
+		str1 = noSpace1;
+		str2 = noSpace2;
 
 		if (str1.length() != str2.length()) {
 			return false;
@@ -65,22 +83,22 @@ public class Anagram {
 	// which are left
 	// as is. For example, the string "What? No way!" becomes "whatnoway"
 	public static String preProcess(String str) {
-		String answer = "";
-		for (int i = 0; i < str.length(); i++) {
-			char c = str.charAt(i);
+    String answer = "";
+    for (int i = 0; i < str.length(); i++) {
+        char c = str.charAt(i);
 
-			// if char is a Capital letter so add 32 : uppercase -> lowercase
-			if (c >= 'A' && c <= 'Z') {
-				c = (char) (c + 32);
-			}
+        // if char is a Capital letter so add 32 : uppercase -> lowercase
+        if (c >= 'A' && c <= 'Z') {
+            c = (char) (c + 32);
+        }
 
-			// if lowercase letter so keep it
-			if (c >= 'a' && c <= 'z') {
-				answer = answer + c;
-			}
-			// everything which is not letter we skip
-		}
-		return answer;
+        // if lowercase letter or space so keep it
+        if ((c >= 'a' && c <= 'z') || c == ' ') {
+            answer = answer + c;
+        }
+        // everything which is not letter or space we skip
+    }
+    return answer;
 	}
 
 	// Returns a random anagram of the given string. The random anagram consists of

@@ -59,21 +59,19 @@ public class LoanCalc {
 	// that will bring the ending balance of a loan close to 0.
 	public static double bisectionSolver(double loan, double rate, int n, double epsilon) {
 		iterationCounter = 0;
-		double lo = loan / n;
-		double hi = lo;
-		while (endBalance(loan, rate, n, hi) > 0) {
-			hi *= 2;
-		}
+		// for payment = 0 the balance is definitely > 0
+		// for payment = loan the balance is definitely < 0
+		double lo = 0.0;
+		double hi = loan;
 
 		while (hi - lo > epsilon) {
 			double mid = (lo + hi) / 2.0;
-			double fMid = endBalance(loan, rate, n, mid); // balance if we pay mid
+			double balance = endBalance(loan, rate, n, mid); // balance if we pay mid
 
-			if (fMid > 0) {
-				lo = mid;
-			} else {
-				hi = mid;
-			}
+			if (balance > 0) 
+				lo = mid;// payment too small, need bigger
+			else 
+				hi = mid;// payment too big, need smaller
 
 			iterationCounter++;
 		}
